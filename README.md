@@ -5,6 +5,8 @@ C++ class that implements a progress bar in console applications on both Linux a
 
 This fork is a single-threaded header-only C++17 derivative based on previous work.
 
+![Demo](doc/demo.gif)
+
 Other known flavours:
 
   * [Mikhail Karasikov](https://github.com/karasikov/cpp_progress_bar)

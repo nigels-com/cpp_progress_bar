@@ -4,6 +4,8 @@
 
 int main() {
 
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
 	/// Example 1
 	{
 		int n = 90;
@@ -36,13 +38,15 @@ int main() {
 
 		int n = 100;
 		Progress::Bar progress_bar;
-		progress_bar.setTotal(n).setDescription("Example 3").setStyle(style);
+		progress_bar.setTotal(n).setDescription("Example #3").setStyle(style);
 
-		for (int i = 0; i <= n; ++i) {
+		for (int i = 0; i < n; ++i) {
 		    ++progress_bar;
 			std::this_thread::sleep_for(std::chrono::milliseconds(40));
 		}
 	}
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 	return EXIT_SUCCESS;
 }
