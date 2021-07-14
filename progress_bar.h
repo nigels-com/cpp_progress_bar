@@ -1,5 +1,9 @@
 #pragma once
 
+// Progress Bar for C++17
+// https://github.com/nigels-com/cpp_progress_bar
+// MIT License
+
 #ifdef WIN32
 #include <windows.h>
 #else
