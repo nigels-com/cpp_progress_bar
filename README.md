@@ -4,9 +4,12 @@ C++ Progress Bar
 C++ class that implements a progress bar in console applications on both Linux and Windows platforms. The progress bar works by referencing an index that keeps updating when processing through a piece of code.
 
 This fork is a single-threaded header-only C++17 derivative based on previous work.
+
 Other known flavours:
+
   * [Mikhail Karasikov](https://github.com/karasikov/cpp_progress_bar)
   * [Hemant Tailor](https://github.com/htailor/cpp_progress_bar)
+
 We made progress, so should you!
 
 Key features
@@ -24,6 +27,8 @@ To use the progress bar, include the following header file:
 ```C++
 #include "progress_bar.h"
 ```
+
+There is no need to build or link a library.
 
 Creating a progress bar
 ------------------------
