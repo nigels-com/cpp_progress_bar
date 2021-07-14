@@ -3,10 +3,16 @@ C++ Progress Bar
 
 C++ class that implements a progress bar in console applications on both Linux and Windows platforms. The progress bar works by referencing an index that keeps updating when processing through a piece of code.
 
+This fork is a single-threaded header-only C++17 derivative based on previous work.
+Other known flavours:
+  * [Mikhail Karasikov](https://github.com/karasikov/cpp_progress_bar)
+  * [Hemant Tailor](https://github.com/htailor/cpp_progress_bar)
+We made progress, so should you!
+
 Key features
 -------------
 
-1. Control the number of updates the progress bar makes.
+1. Limit the progress redrawing based on a millisecond timeout.
 2. The ability to adjust the style of the progress bar.
 3. The length of the progress bar displayed on screen adapts to the the width of the console.
 
@@ -16,7 +22,7 @@ Implementation
 To use the progress bar, include the following header file:
 
 ```C++
-#include "progress_bar.hpp"
+#include "progress_bar.h"
 ```
 
 Creating a progress bar
@@ -26,14 +32,16 @@ To create a progress bar, the total number of jobs need to be known.
 
 ```C++   
 int n = 10;
-ProgressBar progress_bar(n);
+Progress::Bar progress_bar;
+progress_bar.setTotal(n);
 ```
 
 Optionally, small descriptions can also be added to the progress bar.
 
 ```C++ 
 int n = 10;
-ProgressBar progress_bar(n, "Example 1");
+Progress::Bar progress_bar;
+progress_bar.setTotal(n).setDescription("Example 1");
 ```
 
 
@@ -47,7 +55,8 @@ Updates to the progress bar are made using the increment operators.
 
 ```C++
 int n = 10;
-ProgressBar progress_bar(n, "Example 1");
+Progress::Bar progress_bar;
+progress_bar.setTotal(n).setDescription("Example 1");
 
 int job_index = 0;
 
@@ -66,10 +75,11 @@ progress_bar += 1;
 
 ```C++
 int n = 100;
-ProgressBar bar1(n, "Example 1");
+Progress::Bar progress_bar;
+progress_bar.setTotal(n).setDescription("Example 1");
 
 for (int i = 0; i <= n; ++i) {
-    ++bar1;
+    ++progress_bar;
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 ```
@@ -77,33 +87,38 @@ for (int i = 0; i <= n; ++i) {
 Setting the frequency of updates
 ----------------------------------
 
-If progressing through a large job list, iterating through every update will slow down the program. Using the method `SetFrequencyUpdate(int freq)`  overcomes this problem by setting how many times the progress bar should be updated.
+Using the method `setTimeout(size_t timeout)` limits the frequency of redrawing.
 
 **Example 3:**
 ```C++
 int n = 100000;
-ProgressBar bar2(n, "Example 3");
-bar2.SetFrequencyUpdate(10);
+Progress::Bar progress_bar;
+progress_bar.setTotal(n).setDescription("Example 1").setTimeout(50); // 20Hz
 
 for (int i = 0; i <= n; ++i){
-    ++bar2;
+    ++progress_bar;
 }
 ```
 
 Changing the bar style
 ------------------------
 
-The progress bar can be customised using the `SetStyle(const char*, const char*)` method. This changes the ASCII/Unicode characters used for printing the progress bar.
+The progress bar can be customised using the `setStyle()` method. This changes the ASCII/Unicode characters used for printing the progress bar.
 
 **Example 4**
 ```C++
 n = 1000;
-ProgressBar bar3(n, "Example 4");
-bar3.SetFrequencyUpdate(10);
-bar3.SetStyle("\u2588", "-");
+
+Progress::Style style;
+style._empty = "-";
+style._full = "\u2588";
+
+int n = 1000;
+Progress::Bar progress_bar;
+progress_bar.setTotal(n).setDescription("Example 3").setStyle(style);
 
 for (int i = 0; i <= n; ++i) {
-    ++bar3;
+    ++progress_bar;
 }
 ```
 
@@ -112,60 +127,52 @@ Main Example
 =========
 
 ```C++
-#include <iostream>
+#include "progress_bar.h"
+
 #include <thread>
-#include <chrono>
-
-#include "progress_bar.hpp"
-
 
 int main() {
 
-    int n;
+    /// Example 1
+    {
+        int n = 90;
+        Progress::Bar bar;
+        bar.setDescription("Example #1").setTotal(n).setTimeout(50).setStyle(Progress::line_utf8);
 
-    /// Example 1 ///
-
-    n = 100;
-    ProgressBar bar1(n, "Example 1");
-
-    for (int i = 0; i <= n; ++i) {
-        ++bar1;
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        for (int i = 0; i < n; ++i) {
+            ++bar;
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
     }
 
-    /// Example 2 ///
-
-    n = 1000;
-    ProgressBar bar2(n, "Example 2");
-    bar2.SetFrequencyUpdate(10);
-    bar2.SetStyle("|", "-");
-    //bar2.SetStyle("\u2588", "-"); for linux
-
-    std::cout << std::endl;
-    for (int i = 0; i <= n; ++i) {
-        ++bar2;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    /// Example 2
+    {
+        int n = 1500;
+        Progress::Bar bar;
+        bar.setDescription("Example #2").setTotal(n).setTimeout(50).setStyle(Progress::filled_utf8);
+        for (int i = 0; i < n; ++i) {
+            ++bar;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
     }
 
-    n = 5;
-    ProgressBar bar3(n);
-    ++bar3;
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar3;
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar3;
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar3;
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar3;
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar3;
-    // following tests exception error
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar3;
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-    ++bar3;
 
-    return 0;
+    /// Example 3
+    {
+        Progress::Style style;
+        style._empty = "-";
+        style._full = "\u2588";
+
+        int n = 100;
+        Progress::Bar progress_bar;
+        progress_bar.setTotal(n).setDescription("Example 3").setStyle(style);
+
+        for (int i = 0; i <= n; ++i) {
+            ++progress_bar;
+            std::this_thread::sleep_for(std::chrono::milliseconds(40));
+        }
+    }
+
+    return EXIT_SUCCESS;
 }
 ```

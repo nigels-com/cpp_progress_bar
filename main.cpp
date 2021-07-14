@@ -1,49 +1,48 @@
-#include "progress_bar.hpp"
-#include <iostream>
+#include "progress_bar.h"
+
 #include <thread>
-#include <chrono>
 
 int main() {
-	/// Example 1 ///
-	{
-		int n = 100;
-		ProgressBar bar1(n, "Example 1");
 
-		for (int i = 1; i <= n; ++i) {
-			bar1 += 1;
+	/// Example 1
+	{
+		int n = 90;
+		Progress::Bar bar;
+		bar.setDescription("Example #1").setTotal(n).setTimeout(50).setStyle(Progress::line_utf8);
+
+		for (int i = 0; i < n; ++i) {
+			++bar;
 			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 	}
 
-	/// Example 2 ///
+	/// Example 2
 	{
-		int n = 1000;
-		ProgressBar bar2(n, "Example 2");
-		bar2.SetFrequencyUpdate(10);
-		bar2.SetStyle('|','-');
-		//bar2.SetStyle("\u2588", "-"); for linux
-		for (int i = 1; i <= n; ++i) {
-			bar2 += 1;
+		int n = 1500;
+		Progress::Bar bar;
+		bar.setDescription("Example #2").setTotal(n).setTimeout(50).setStyle(Progress::filled_utf8);
+		for (int i = 0; i < n; ++i) {
+			++bar;
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 	}
 
-	ProgressBar bar3(5);
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	++bar3;
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	++bar3;
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	++bar3;
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	++bar3;
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	++bar3;
-	// following tests exception error
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	++bar3;
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	++bar3;
 
-	return 0;
+	/// Example 3
+	{
+		Progress::Style style;
+		style._empty = "-";
+		style._full = "\u2588";
+
+		int n = 100;
+		Progress::Bar progress_bar;
+		progress_bar.setTotal(n).setDescription("Example 3").setStyle(style);
+
+		for (int i = 0; i <= n; ++i) {
+		    ++progress_bar;
+			std::this_thread::sleep_for(std::chrono::milliseconds(40));
+		}
+	}
+
+	return EXIT_SUCCESS;
 }

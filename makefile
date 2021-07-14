@@ -1,7 +1,7 @@
 CC = g++
-CPPFLAGS = -std=c++11
+CPPFLAGS = -std=c++17
 TARGET = progress_bar
-OBJ = main.o progress_bar.o
+OBJ = main.o
 
 all : progress_bar
 
@@ -9,11 +9,7 @@ progress_bar : $(OBJ)
 	@echo "<***Linking***> $@"
 	@$(CC) $(CPPFLAGS) $(OBJ) -o $(TARGET)
 
-main.o : main.cpp
-	@echo "<**Compiling**> $@"
-	@$(CC) $(CPPFLAGS) -c $^
-
-progress_bar.o : progress_bar.cpp
+main.o : main.cpp progress_bar.h
 	@echo "<**Compiling**> $@"
 	@$(CC) $(CPPFLAGS) -c $^
 
